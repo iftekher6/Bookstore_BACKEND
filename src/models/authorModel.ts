@@ -1,4 +1,5 @@
 import knex from '../db';
+import { Book } from './bookModel';
 
 
 export interface Author {
@@ -8,23 +9,24 @@ export interface Author {
   birthdate: string;
 }
 
+//get all authors
 export class AuthorModel {
   static async getAll(): Promise<Author[  ]> {
     return knex('authors').select('*');
   }
-
+//get authors by id
   static async getById(id: number): Promise<Author | undefined> {
     return knex('authors').where({ id }).first();
   }
   
+  //GET /authors/:id/books: Retrieve a list of all books written by a specific author.
   static async getAllBooksByAuthor()  {   
-     //GET /authors/:id/books: Retrieve a list of all books written by a specific author.
      const authors = await knex('authors').select('*');
      const books = await knex('books').select('*');
    
-     const authorsWithBooks = authors.map(author => ({
+     const authorsWithBooks = authors.map((author: Author)  => ({
        ...author,
-       books: books.filter(book => book.author_id === author.id),
+       books: books.filter((book : Book) => book.author_id === author.id),
      }));
    
      return authorsWithBooks;
